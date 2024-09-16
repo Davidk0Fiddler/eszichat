@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Chat</title>
+</head>
+<body>
+  <h1>Chat Program</h1>
+  
+  <div id="chat-box"></div>
+  <input type="text" id="message-input" placeholder="Írd be az üzenetet...">
+  <button onclick="sendMessage()">Küldés</button>
+
+  <!-- Firebase SDK-k -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcxnD3nKTNIiMnqWfmmjg6SnwFrqtqhJQ",
+      authDomain: "chat-d2233.firebaseapp.com",
+      projectId: "chat-d2233",
+      storageBucket: "chat-d2233.appspot.com",
+      messagingSenderId: "314874064838",
+      appId: "1:314874064838:web:79238fbf2a92eeab8accc7",
+      measurementId: "G-JMH5D7RZSJ"
+  };
+  firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Üzenetek betöltése
+    db.collection("messages").orderBy("timestamp").onSnapshot((snapshot) => {
+      const chatBox = document.getElementById('chat-box');
+      chatBox.innerHTML = "";
+      snapshot.forEach(doc => {
+        const message = doc.data().message;
+        chatBox.innerHTML += `<p>${message}</p>`;
+      });
+    });
+
+    // Üzenet küldése
+    function sendMessage() {
+      const messageInput = document.getElementById('message-input');
+      const message = messageInput.value;
+      db.collection('messages').add({
+        message: message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      messageInput.value = "";
+    }
+  </script>
+</body>
+</html>
